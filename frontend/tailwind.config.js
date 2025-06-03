@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -37,4 +37,17 @@ module.exports = {
         'md': '8px',
         'lg': '12px', // For larger cards or modals
         'xl': '16px',
-        'card': '12px', // Specifically for cards as per 
+        'card': '12px', // Specifically for cards
+      },
+      boxShadow: { // Added based on summary
+        'card': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'modal': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+      }
+    },
+  },
+  plugins: [
+    require('@headlessui/tailwindcss'), // Added based on summary
+  ],
+};
+
+module.exports = config;
