@@ -1,8 +1,8 @@
 import Head from 'next/head';
-import Image from 'next/image'; // Added import for Next/Image
+import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import WWSDisplay from '@/components/WWSDisplay'; // Changed to alias path
+import { useState } from 'react';
+import WWSDisplay from '@/components/WWSDisplay';
 import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, HomeIcon, TagIcon, ArrowsPointingOutIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 
 const mockApartment = {
@@ -36,27 +36,54 @@ const mockApartment = {
   energyLabel: 'A'
 };
 
-export default function ApartmentDetailPage() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [apartment, setApartment] = useState(null);
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { id: mockApartment.id } }, // Pre-render path for the mock apartment
+    ],
+    // fallback: false means other routes will result in a 404 page.
+    // For `output: 'export'`, `fallback: false` is typical for known static paths.
+    // `fallback: true` or `fallback: 'blocking'` would require server-side capabilities or 
+    // more complex setup for static export, which is not assumed here.
+    fallback: false, 
+  };
+}
+
+export async function getStaticProps(context) {
+  const { id } = context.params;
+  // In a real application, you would fetch apartment data based on 'id'.
+  // For this example, we use the mockApartment if the ID matches.
+  if (id === mockApartment.id) {
+    return {
+      props: {
+        initialApartment: mockApartment,
+      },
+    };
+  }
+  // If the ID doesn't match (and fallback: false), Next.js will show a 404 page.
+  // However, to be explicit if this function were more complex:
+  return { notFound: true };
+}
+
+export default function ApartmentDetailPage({ initialApartment }) {
+  const router = useRouter(); // Retained for potential other uses (e.g., navigation, query params)
+  const [apartment, setApartment] = useState(initialApartment);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  useEffect(() => {
-    if (id) {
-      // Simulate API call to fetch apartment data by id
-      // In a real app, replace this with actual data fetching logic
-      const fetchApartmentData = async () => {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        // Find apartment in mock data or use a default mock if ID doesn't match
-        // For this example, we'll always return the same mockApartment
-        setApartment(mockApartment);
-      };
-      fetchApartmentData();
-    }
-  }, [id]);
-
+  // With getStaticProps and fallback: false, router.isFallback should not be true for rendered paths.
+  // This check is more relevant for fallback: true or 'blocking'.
+  if (router.isFallback) {
+    return (
+      <div className="flex justify-center items-center min-h-screen" aria-live="polite" aria-busy="true">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-brand-primary"></div>
+        <span className="sr-only">Loading apartment details...</span>
+      </div>
+    );
+  }
+  
+  // If initialApartment is not provided (e.g. getStaticProps returned notFound: true), 
+  // Next.js handles the 404 page before this component renders. 
+  // This check is a safeguard.
   if (!apartment) {
     return (
       <div className="flex justify-center items-center min-h-screen" aria-live="polite" aria-busy="true">
@@ -67,10 +94,12 @@ export default function ApartmentDetailPage() {
   }
 
   const nextImage = () => {
+    if (!apartment.images || apartment.images.length === 0) return;
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % apartment.images.length);
   };
 
   const prevImage = () => {
+    if (!apartment.images || apartment.images.length === 0) return;
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + apartment.images.length) % apartment.images.length);
   };
 
@@ -82,17 +111,17 @@ export default function ApartmentDetailPage() {
       </Head>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-white shadow-card rounded-card overflow-hidden"> {/* Corrected rounded-lg-card to rounded-card */}
+        <div className="bg-white shadow-card rounded-card overflow-hidden">
           {/* Image Gallery */}
           {apartment.images && apartment.images.length > 0 && (
-            <div className="relative w-full h-64 md:h-96"> {/* Container for Image and absolute controls */}
+            <div className="relative w-full h-64 md:h-96">
               <Image 
                 src={apartment.images[currentImageIndex].url} 
                 alt={apartment.images[currentImageIndex].alt || `${apartment.title} - Image ${currentImageIndex + 1}`}
                 fill
                 className="object-cover transition-opacity duration-500 ease-in-out"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px" // Example sizes, adjust based on layout
-                priority={currentImageIndex === 0} // Prioritize loading the first image
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px"
+                priority={currentImageIndex === 0}
               />
               {apartment.images.length > 1 && (
                 <>
@@ -116,7 +145,7 @@ export default function ApartmentDetailPage() {
                     {apartment.images.map((image, index) => (
                       <button 
                         type="button"
-                        key={image.url || index} // Use URL if available and unique, else index
+                        key={image.url || `gallery-dot-${index}`} 
                         onClick={() => setCurrentImageIndex(index)}
                         className={`w-3 h-3 rounded-full ${index === currentImageIndex ? 'bg-brand-primary' : 'bg-neutral-border-gray opacity-70'} hover:opacity-100 hover:bg-brand-secondary transition-all`}
                         aria-label={`Go to image ${index + 1}`}
@@ -171,8 +200,8 @@ export default function ApartmentDetailPage() {
                 <div className="mb-8">
                     <h2 className="text-2xl font-semibold text-brand-primary mb-3 font-secondary">Features</h2>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
-                        {apartment.features.map((feature) => (
-                            <li key={feature} className="flex items-center text-neutral-text-gray">
+                        {apartment.features.map((feature, index) => (
+                            <li key={`${feature}-${index}`} className="flex items-center text-neutral-text-gray">
                                 <TagIcon className="h-5 w-5 mr-2 text-brand-accent flex-shrink-0" />
                                 {feature}
                             </li>
