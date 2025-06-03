@@ -5,73 +5,121 @@ import { useState } from 'react';
 import WWSDisplay from '@/components/WWSDisplay';
 import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, HomeIcon, TagIcon, ArrowsPointingOutIcon, BanknotesIcon } from '@heroicons/react/24/outline';
 
-const mockApartment = {
-  id: '123',
-  title: 'Spacious Modern Apartment in City Center',
-  address: '123 Main Street, Amsterdam, NL',
-  price: 1800,
-  size: 85, // sqm
-  rooms: 3,
-  description: 'A beautifully renovated 3-room apartment located in the vibrant heart of Amsterdam. Features include a modern kitchen, a large living room with plenty of natural light, two spacious bedrooms, and a balcony overlooking the city. Close to public transport, shops, and restaurants.',
-  images: [
-    {
-        alt: "Living room of modern apartment",
-        description: "Professional apartment gallery image",
-        url: "https://source.unsplash.com/800x600/?apartment,gallery&sig=0"
-    },
-    {
-        alt: "Modern kitchen in apartment",
-        description: "Professional apartment gallery image",
-        url: "https://source.unsplash.com/800x600/?apartment,gallery,modern&sig=1"
-    },
-    {
-        alt: "Bedroom with large window",
-        description: "Professional apartment gallery image",
-        url: "https://source.unsplash.com/800x600/?apartment,gallery,clean&sig=2"
-    }
-  ],
-  wwsPoints: 145,
-  maxRent: 1750.50,
-  features: ['Modern Kitchen', 'Balcony', 'Elevator', 'Hardwood Floors', 'City View', 'Pet-friendly'],
-  energyLabel: 'A'
-};
+// Consistent data source for apartment details, aligning with homepage listings
+const detailedMockApartments = [
+  {
+    id: '1',
+    title: 'Modern Apartment in Amsterdam',
+    address: '123 Main St, Amsterdam',
+    price: 1200,
+    size: 75,
+    rooms: 3, // bedrooms (2) + 1 living area
+    bedrooms: 2,
+    bathrooms: 1,
+    description: 'A beautiful and modern 2-bedroom apartment located in a prime area of Amsterdam. Features include a spacious living room, a fully equipped kitchen, and a lovely balcony. Close to public transport, shops, and parks.',
+    images: [
+      {
+        alt: "Living room of modern apartment in Amsterdam",
+        description: "Spacious and bright living area",
+        url: "https://source.unsplash.com/800x600/?apartment,modern&sig=10"
+      },
+      {
+        alt: "Kitchen of Amsterdam apartment",
+        description: "Fully equipped modern kitchen",
+        url: "https://source.unsplash.com/800x600/?kitchen,modern&sig=101"
+      }
+    ],
+    wwsPoints: 140,
+    maxRent: 1100,
+    features: ['Balcony', 'Modern Kitchen', 'Elevator', 'Hardwood Floors', 'City View'],
+    energyLabel: 'B'
+  },
+  {
+    id: '2',
+    title: 'Cozy Studio in Utrecht',
+    address: '456 Oak Ave, Utrecht',
+    price: 950,
+    size: 50,
+    rooms: 2, // bedroom/living area (1) + 1 (kitchenette might be in same room, but listed as 1 bed)
+    bedrooms: 1,
+    bathrooms: 1,
+    description: 'Charming and cozy studio apartment in the heart of Utrecht. Perfect for a single professional or student. Comes with a compact kitchen and a comfortable living/sleeping area.',
+    images: [
+      {
+        alt: "Cozy studio in Utrecht",
+        description: "Well-designed studio space",
+        url: "https://source.unsplash.com/800x600/?apartment,cozy&sig=11"
+      },
+      {
+        alt: "Kitchenette in Utrecht studio",
+        description: "Compact and functional kitchenette",
+        url: "https://source.unsplash.com/800x600/?kitchenette&sig=111"
+      }
+    ],
+    wwsPoints: 120,
+    maxRent: 900,
+    features: ['Close to Public Transport', 'City Center', 'Furnished Optional'],
+    energyLabel: 'C'
+  },
+  {
+    id: '3',
+    title: 'Spacious Apartment in Rotterdam',
+    address: '789 Pine Ln, Rotterdam',
+    price: 1800,
+    size: 100,
+    rooms: 4, // bedrooms (3) + 1 living area
+    bedrooms: 3,
+    bathrooms: 2,
+    description: 'A very spacious 3-bedroom apartment in Rotterdam, ideal for families. Features a large living room, two bathrooms, and modern amenities throughout. Located in a family-friendly neighborhood.',
+    images: [
+      {
+        alt: "Living room of spacious apartment in Rotterdam",
+        description: "Large and airy living room",
+        url: "https://source.unsplash.com/800x600/?apartment,spacious&sig=12"
+      },
+      {
+        alt: "Master bedroom in Rotterdam apartment",
+        description: "Comfortable master bedroom with ample light",
+        url: "https://source.unsplash.com/800x600/?bedroom,modern,large&sig=121"
+      }
+    ],
+    wwsPoints: 180,
+    maxRent: 1750,
+    features: ['Modern Kitchen', 'Balcony', 'Elevator', 'Two Bathrooms', 'Pet-friendly'],
+    energyLabel: 'A'
+  }
+];
 
 export async function getStaticPaths() {
+  const paths = detailedMockApartments.map(apartment => ({
+    params: { id: apartment.id.toString() },
+  }));
   return {
-    paths: [
-      { params: { id: mockApartment.id } }, // Pre-render path for the mock apartment
-    ],
-    // fallback: false means other routes will result in a 404 page.
-    // For `output: 'export'`, `fallback: false` is typical for known static paths.
-    // `fallback: true` or `fallback: 'blocking'` would require server-side capabilities or 
-    // more complex setup for static export, which is not assumed here.
+    paths,
     fallback: false, 
   };
 }
 
 export async function getStaticProps(context) {
   const { id } = context.params;
-  // In a real application, you would fetch apartment data based on 'id'.
-  // For this example, we use the mockApartment if the ID matches.
-  if (id === mockApartment.id) {
-    return {
-      props: {
-        initialApartment: mockApartment,
-      },
-    };
+  const apartment = detailedMockApartments.find(apt => apt.id.toString() === id.toString());
+
+  if (!apartment) {
+    return { notFound: true };
   }
-  // If the ID doesn't match (and fallback: false), Next.js will show a 404 page.
-  // However, to be explicit if this function were more complex:
-  return { notFound: true };
+
+  return {
+    props: {
+      initialApartment: apartment,
+    },
+  };
 }
 
 export default function ApartmentDetailPage({ initialApartment }) {
-  const router = useRouter(); // Retained for potential other uses (e.g., navigation, query params)
-  const [apartment, setApartment] = useState(initialApartment);
+  const router = useRouter(); 
+  const apartment = initialApartment; // Use prop directly, no need for state if not modified client-side
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // With getStaticProps and fallback: false, router.isFallback should not be true for rendered paths.
-  // This check is more relevant for fallback: true or 'blocking'.
   if (router.isFallback) {
     return (
       <div className="flex justify-center items-center min-h-screen" aria-live="polite" aria-busy="true">
@@ -81,15 +129,18 @@ export default function ApartmentDetailPage({ initialApartment }) {
     );
   }
   
-  // If initialApartment is not provided (e.g. getStaticProps returned notFound: true), 
-  // Next.js handles the 404 page before this component renders. 
-  // This check is a safeguard.
   if (!apartment) {
+    // This case should ideally be handled by getStaticProps returning notFound: true, 
+    // which Next.js then uses to render a 404 page.
+    // However, as a safeguard if the component is somehow rendered without initialApartment:
     return (
-      <div className="flex justify-center items-center min-h-screen" aria-live="polite" aria-busy="true">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-brand-primary"></div>
-        <span className="sr-only">Loading apartment details...</span>
-      </div>
+        <div className="container mx-auto px-4 py-8 text-center">
+            <h1 className="text-2xl font-semibold text-neutral-dark-gray">Apartment not found</h1>
+            <p className="text-neutral-text-gray mt-2">The apartment details could not be loaded. It might have been removed or the link is incorrect.</p>
+            <button type="button" onClick={() => router.push('/')} className="mt-6 btn-primary">
+                Go to Homepage
+            </button>
+        </div>
     );
   }
 
