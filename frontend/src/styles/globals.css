@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply font-primary text-neutral-700 bg-neutral-50;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-secondary text-neutral-900;
+  }
+
+  h1 {
+    @apply text-4xl font-bold sm:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold sm:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl font-semibold sm:text-3xl;
+  }
+
+  p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  a {
+    @apply text-primary-500 hover:text-primary-600 transition-colors duration-150;
+  }
+
+  input, 
+  select,
+  textarea {
+    @apply border-neutral-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500;
+  }
+
+  button {
+    @apply transition-all duration-150 ease-in-out;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 text-white hover:bg-primary-600 focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 rounded-lg px-4 py-2 font-medium shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 rounded-lg px-4 py-2 font-medium shadow-sm;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-500 text-white hover:bg-accent-600 focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 rounded-lg px-4 py-2 font-medium shadow-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-card shadow-card overflow-hidden;
+  }
+}
+
+/* Custom scrollbar (optional, for modern browsers) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #E9ECEF;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CED4DA;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ADB5BD;
+}
