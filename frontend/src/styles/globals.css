@@ -37,16 +37,12 @@
     @apply text-brand-primary hover:text-brand-secondary transition-colors duration-150;
   }
 
-  input, 
-  select,
-  textarea {
-    @apply border-neutral-border-gray rounded-md shadow-sm focus:ring-brand-primary focus:border-brand-primary;
-  }
+  /* Form element base styles removed from here to prevent build issues. 
+     Style them with utility classes directly or use the @tailwindcss/forms plugin. 
+     Basic resets are handled by Tailwind's preflight. */
+}
 
-  button {
-    @apply transition-all duration-150 ease-in-out;
-  }
-
+@layer components {
   .btn-primary {
     @apply bg-brand-primary text-white hover:brightness-90 focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary rounded-lg px-4 py-2 font-medium shadow-sm;
   }
@@ -62,4 +58,19 @@
   .card {
     @apply bg-white rounded-card shadow-card overflow-hidden;
   }
+
+  /* Default transition for all buttons if not further styled by .btn-* classes */
+  button, [type='button'], [type='reset'], [type='submit'] {
+      @apply transition-all duration-150 ease-in-out;
+  }
+
+  /* 
+    If you need consistent base styling for form elements beyond Tailwind's preflight,
+    define component classes here (e.g., .form-input) and apply them in your JSX.
+    Example:
+    .form-input {
+      @apply block w-full rounded-md border-neutral-border-gray shadow-sm focus:border-brand-primary focus:ring focus:ring-brand-primary focus:ring-opacity-50;
+    }
+    The project currently styles inputs with specific utility classes where used.
+  */
 }
