@@ -5,8 +5,10 @@ import Link from 'next/link';
 // import { MapPinIcon, HomeIcon, ArrowsPointingOutIcon, CurrencyEuroIcon } from '@heroicons/react/24/outline';
 
 export default function ApartmentCard({ apartment }) {
-  if (!apartment) {
-    return null; // Or some placeholder/loading state
+  // Add a stricter check for apartment and its ID
+  if (!apartment || typeof apartment.id !== 'string' || apartment.id.trim() === '') {
+    // console.warn("ApartmentCard: Received apartment data with invalid or missing ID.", apartment);
+    return null; // Don't render the card if ID is invalid
   }
 
   const {
@@ -25,9 +27,9 @@ export default function ApartmentCard({ apartment }) {
     finalImageUrl = apartmentProvidedImageUrl;
   } else {
     const placeholderBaseUrl = 'https://source.unsplash.com/random/800x600/?apartment,building';
-    // Use id for stability in placeholder, fallback to a random string if id is not available
-    const imageSig = id || String(Math.random()).slice(2, 12); 
-    finalImageUrl = `${placeholderBaseUrl}&sig=${imageSig}`;
+    // Use id for stability in placeholder, guaranteed to be a valid string by the check above.
+    const imageSig = id;
+    finalImageUrl = `${placeholderBaseUrl}&sig=${encodeURIComponent(imageSig)}`;
   }
 
   const formatCurrency = (value) => {
@@ -63,7 +65,7 @@ export default function ApartmentCard({ apartment }) {
           <span className="text-neutral-border-gray">|</span>
           <span>{typeof bathrooms === 'number' ? bathrooms : 'N/A'} bath(s)</span>
           <span className="text-neutral-border-gray">|</span>
-          <span>{typeof size === 'number' ? size : 'N/A'} m²</span>
+          <span>{typeof size === 'number' ? size : 'N/A'} m\u00b2</span>
         </div>
 
         <div className="mt-auto pt-3 border-t border-neutral-border-gray">
