@@ -37,9 +37,15 @@
     @apply text-brand-primary hover:text-brand-secondary transition-colors duration-150;
   }
 
-  /* Form element base styles removed from here to prevent build issues. 
-     Style them with utility classes directly or use the @tailwindcss/forms plugin. 
-     Basic resets are handled by Tailwind's preflight. */
+  /* 
+    Form element base styles are intentionally omitted here.
+    Tailwind's Preflight handles basic resets.
+    For consistent form styling, either:
+    1. Use utility classes directly in your JSX/TSX components.
+    2. Install and use the @tailwindcss/forms plugin.
+    3. Define custom component classes (e.g., .form-input) in the @layer components below.
+    The project currently styles inputs with specific utility classes where used.
+  */
 }
 
 @layer components {
@@ -65,12 +71,9 @@
   }
 
   /* 
-    If you need consistent base styling for form elements beyond Tailwind's preflight,
-    define component classes here (e.g., .form-input) and apply them in your JSX.
-    Example:
+    Example of a custom form input component class (if not using @tailwindcss/forms):
     .form-input {
       @apply block w-full rounded-md border-neutral-border-gray shadow-sm focus:border-brand-primary focus:ring focus:ring-brand-primary focus:ring-opacity-50;
     }
-    The project currently styles inputs with specific utility classes where used.
   */
 }
