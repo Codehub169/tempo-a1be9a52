@@ -15,11 +15,15 @@ fi
 # Frontend setup
 echo "Setting up frontend..."
 cd ../frontend
-if [ ! -d "node_modules" ]; then
-  npm install
-else
-  echo "Frontend dependencies already installed."
-fi
+
+# --- MODIFICATION START ---
+echo "Ensuring a clean state for frontend dependencies..."
+rm -rf node_modules
+# Optionally, remove package-lock.json if it might be causing issues with npm install resolution.
+# rm -f package-lock.json
+echo "Installing frontend dependencies..."
+npm install # This will install all dependencies listed in package.json
+# --- MODIFICATION END ---
 
 # Build frontend
 echo "Building frontend..."
